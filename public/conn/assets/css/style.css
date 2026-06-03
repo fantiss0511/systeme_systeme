@@ -1,0 +1,132 @@
+
+/*  
+  --------------------------------------------------------------
+  -----      Import 'Inter' font and apply it to body      -----
+  --------------------------------------------------------------
+*/
+
+@import url('font/inter.css');
+
+body {
+    font-family: 'Inter var', sans-serif;
+    font-feature-settings: "cv02","cv03","cv04","cv11";
+}
+
+
+
+
+
+/*  
+  ----------------------------------------------------------------- 
+  -----      Loader animation before displaying the page      -----
+  -----------------------------------------------------------------
+*/
+
+.loader-wrapper {
+    z-index: 2000 !important;
+}
+
+
+
+
+
+/*  
+  ------------------------------------------------  
+  -----      Additional classes styling      -----
+  ------------------------------------------------
+*/
+
+.bg-header {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity)) !important;
+}
+
+.gradient-start {
+    stop-color: var(--bs-gradient-start);
+    stop-opacity: 1;
+}
+
+.gradient-mid {
+    stop-color: var(--bs-gradient-mid);
+    stop-opacity: 1;
+}
+
+.gradient-end {
+    stop-color: var(--bs-gradient-end);
+    stop-opacity: 1;
+}
+
+.gradient-header {
+    --bs-gradient-start: var(--bs-primary);
+    --bs-gradient-mid: var(--bs-primary);
+    --bs-gradient-end: var(--bs-tertiary-bg);
+}
+
+
+
+
+
+/*  
+  ---------------------------------------------------------------------------------------  
+  -----      AOS (Animate on Scroll) library for right-to-left (RTL) languages      -----
+  ---------------------------------------------------------------------------------------
+*/
+
+[dir="rtl"] [data-aos=fade-left] {
+    transform: translate3d(-100px, 0, 0);
+}
+[dir="rtl"] [data-aos=fade-right] {
+    transform: translate3d(100px, 0, 0); 
+}
+
+[dir="rtl"] [data-aos=fade-up-left] {
+    transform: translate3d(-100px, 100px, 0); 
+}
+[dir="rtl"] [data-aos=fade-up-right] {
+    transform: translate3d(100px, 100px, 0); 
+}
+
+[dir="rtl"] [data-aos=fade-down-left] {
+    transform: translate3d(-100px,-100px,0); 
+}
+[dir="rtl"] [data-aos=fade-down-right] {
+    transform: translate3d(100px, -100px, 0); 
+}
+
+[dir="rtl"] [data-aos=flip-right] {
+    transform: perspective(2500px) rotateY(-100deg);
+}
+[dir="rtl"] [data-aos=flip-left] {
+    transform: perspective(2500px) rotateY(100deg);
+}
+[dir="rtl"] [data-aos=flip-right].aos-animate {
+    transform: perspective(2500px) rotateY(0);
+}
+[dir="rtl"] [data-aos=flip-left].aos-animate {
+    transform: perspective(2500px) rotateY(0);
+}
+
+[dir="rtl"] [data-aos=slide-left] {
+    transform: translate3d(-100%,0,0);
+}
+[dir="rtl"] [data-aos=slide-right] {
+    transform: translate3d(100%,0,0);
+}
+
+[dir="rtl"] [data-aos=zoom-in-right] {
+    transform: translate3d(100px,0,0) scale(.6);
+}
+[dir="rtl"] [data-aos=zoom-in-left] {
+    transform: translate3d(-100px,0,0) scale(.6);
+}
+
+[dir="rtl"] [data-aos=zoom-out-right] {
+    transform: translate3d(100px,0,0) scale(1.2);
+}
+[dir="rtl"] [data-aos=zoom-out-left] {
+    transform: translate3d(-100px,0,0) scale(1.2);
+}
+
+
+
+

@@ -1,0 +1,677 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Gestion Pénitentiaire API",
+        "description": "API REST pour le recensement des détenus, le suivi des condamnations et les statistiques pénitentiaires.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api",
+            "description": "Serveur local"
+        }
+    ],
+    "paths": {
+        "/detenus/{detenu}/condamnations": {
+            "get": {
+                "tags": [
+                    "Condamnations"
+                ],
+                "summary": "Lister les condamnations d'un détenu",
+                "operationId": "5c03d4842f7baba3c9e8882cd3df9d7e",
+                "parameters": [
+                    {
+                        "name": "detenu",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "NINA-2026001"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des condamnations"
+                    },
+                    "404": {
+                        "description": "Détenu introuvable"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Condamnations"
+                ],
+                "summary": "Enregistrer une condamnation",
+                "description": "La date de fin de peine est calculée automatiquement (date_debut + duree_peine_mois).",
+                "operationId": "f348fbb6b48e960b2a2be56ef5a252d6",
+                "parameters": [
+                    {
+                        "name": "detenu",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "NINA-2026001"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CondamnationInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Condamnation créée"
+                    },
+                    "404": {
+                        "description": "Détenu introuvable"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/condamnations/{condamnation}": {
+            "get": {
+                "tags": [
+                    "Condamnations"
+                ],
+                "summary": "Consulter une condamnation",
+                "operationId": "5471949b562c0ff8801378f78d6c3e08",
+                "parameters": [
+                    {
+                        "name": "condamnation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détail de la condamnation"
+                    },
+                    "404": {
+                        "description": "Condamnation introuvable"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Condamnations"
+                ],
+                "summary": "Modifier une condamnation",
+                "operationId": "5291847d8b2d310f509f9b0057a05ffd",
+                "parameters": [
+                    {
+                        "name": "condamnation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CondamnationInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Condamnation mise à jour"
+                    },
+                    "404": {
+                        "description": "Condamnation introuvable"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Condamnations"
+                ],
+                "summary": "Supprimer une condamnation",
+                "operationId": "a55b731c658c295366ca59034976af86",
+                "parameters": [
+                    {
+                        "name": "condamnation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Condamnation supprimée",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Condamnation introuvable"
+                    }
+                }
+            }
+        },
+        "/detenus": {
+            "get": {
+                "tags": [
+                    "Détenus"
+                ],
+                "summary": "Lister / rechercher les détenus",
+                "description": "Recherche multicritère par nom, numéro Nina, date d'entrée ou statut.",
+                "operationId": "0afa7ee2a62a43720909cb1cc54505ae",
+                "parameters": [
+                    {
+                        "name": "nom",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "Diallo"
+                    },
+                    {
+                        "name": "nina",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "NINA-2026001"
+                    },
+                    {
+                        "name": "date_entree",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "example": "2024-01-10"
+                    },
+                    {
+                        "name": "statut",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "present",
+                                "libere",
+                                "decede"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée des détenus"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Détenus"
+                ],
+                "summary": "Enregistrer un détenu",
+                "operationId": "2d275f5e848e761c9066ab2a9762f820",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DetenuInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Détenu créé"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/detenus/{detenu}": {
+            "get": {
+                "tags": [
+                    "Détenus"
+                ],
+                "summary": "Fiche de synthèse d'un détenu",
+                "description": "Affiche les informations personnelles, condamnations, temps écoulé et temps restant.",
+                "operationId": "0e2a37f6725e673532be7a5fc9a1b450",
+                "parameters": [
+                    {
+                        "name": "detenu",
+                        "in": "path",
+                        "description": "ID ou NINA selon votre Route Model Binding",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "NINA-2026001"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Fiche détenu"
+                    },
+                    "404": {
+                        "description": "Détenu introuvable"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Détenus"
+                ],
+                "summary": "Modifier un détenu",
+                "operationId": "bf44a52523d3784842a2277494238726",
+                "parameters": [
+                    {
+                        "name": "detenu",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "NINA-2026001"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DetenuInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Détenu mis à jour"
+                    },
+                    "404": {
+                        "description": "Détenu introuvable"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Détenus"
+                ],
+                "summary": "Supprimer un détenu",
+                "operationId": "911986e1da935d8bc8b88b9ca292a346",
+                "parameters": [
+                    {
+                        "name": "detenu",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "NINA-2026001"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détenu supprimé"
+                    },
+                    "404": {
+                        "description": "Détenu introuvable"
+                    }
+                }
+            }
+        },
+        "/detenus/listes/presents": {
+            "get": {
+                "tags": [
+                    "Listes"
+                ],
+                "summary": "Liste des détenus présents",
+                "operationId": "fcfb3d616d894e65496509b3bf1c6f31",
+                "responses": {
+                    "200": {
+                        "description": "Liste des détenus avec statut present"
+                    }
+                }
+            }
+        },
+        "/detenus/listes/sorties-prevues": {
+            "get": {
+                "tags": [
+                    "Listes"
+                ],
+                "summary": "Sorties prévues pour un mois donné",
+                "operationId": "21330537137bc8c47c3bbbe4bf0b70f3",
+                "parameters": [
+                    {
+                        "name": "mois",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    },
+                    {
+                        "name": "annee",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2026
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détenus dont la fin de peine est prévue ce mois-ci"
+                    }
+                }
+            }
+        },
+        "/detenus/listes/deces": {
+            "get": {
+                "tags": [
+                    "Listes"
+                ],
+                "summary": "Liste des décès",
+                "operationId": "479e680fb350970f88aa443ddd72aedf",
+                "responses": {
+                    "200": {
+                        "description": "Liste des détenus avec statut decede"
+                    }
+                }
+            }
+        },
+        "/ping": {
+            "get": {
+                "tags": [
+                    "Santé"
+                ],
+                "summary": "Vérifier que l'API est disponible",
+                "description": "Endpoint de test pour Swagger — confirme que le serveur répond.",
+                "operationId": "41b008b9fce9d1162650a6aa7c6d8185",
+                "responses": {
+                    "200": {
+                        "description": "Serveur opérationnel",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "up"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "API Gestion Pénitentiaire opérationnelle"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/infractions": {
+            "get": {
+                "tags": [
+                    "Référentiels"
+                ],
+                "summary": "Lister les infractions",
+                "description": "Référentiel des natures d'infraction (utile avant d'enregistrer une condamnation).",
+                "operationId": "116ca354dfdaa7b2ce62db1fc86dcf14",
+                "responses": {
+                    "200": {
+                        "description": "Liste des infractions"
+                    }
+                }
+            }
+        },
+        "/juridictions": {
+            "get": {
+                "tags": [
+                    "Référentiels"
+                ],
+                "summary": "Lister les juridictions",
+                "description": "Référentiel des juridictions de condamnation.",
+                "operationId": "4a730434bb0dbcc2d1980c265ab8e60a",
+                "responses": {
+                    "200": {
+                        "description": "Liste des juridictions"
+                    }
+                }
+            }
+        },
+        "/statistiques/par-infraction": {
+            "get": {
+                "tags": [
+                    "Statistiques"
+                ],
+                "summary": "Répartition des détenus par type d'infraction",
+                "operationId": "aaed6ad38dba5eebd8e44d63931fba4e",
+                "responses": {
+                    "200": {
+                        "description": "Statistiques par infraction (détenus présents uniquement)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "repartition_par_infraction": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "total_detenus_presents": {
+                                            "type": "integer",
+                                            "example": 42
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/statistiques/par-age": {
+            "get": {
+                "tags": [
+                    "Statistiques"
+                ],
+                "summary": "Répartition des détenus par tranche d'âge",
+                "operationId": "ed483e1f4916bc557ebd624d3fbd3186",
+                "responses": {
+                    "200": {
+                        "description": "Statistiques par tranche d'âge (détenus présents uniquement)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "repartition_par_age": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "total_detenus_presents": {
+                                            "type": "integer",
+                                            "example": 42
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "DetenuInput": {
+                "required": [
+                    "matricule_ou_nina",
+                    "nom",
+                    "prenom",
+                    "date_naissance",
+                    "sexe"
+                ],
+                "properties": {
+                    "matricule_ou_nina": {
+                        "type": "string",
+                        "example": "NINA-2026001"
+                    },
+                    "nom": {
+                        "type": "string",
+                        "example": "Diallo"
+                    },
+                    "prenom": {
+                        "type": "string",
+                        "example": "Amadou"
+                    },
+                    "date_naissance": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "1990-05-15"
+                    },
+                    "sexe": {
+                        "type": "string",
+                        "example": "M",
+                        "enum": [
+                            "M",
+                            "F"
+                        ]
+                    },
+                    "photo": {
+                        "type": "string",
+                        "example": "photos/detenu.jpg",
+                        "nullable": true
+                    },
+                    "statut": {
+                        "type": "string",
+                        "example": "present",
+                        "enum": [
+                            "present",
+                            "libere",
+                            "decede"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "CondamnationInput": {
+                "required": [
+                    "id_infraction",
+                    "id_juridiction",
+                    "date_debut_peine",
+                    "duree_peine_mois"
+                ],
+                "properties": {
+                    "id_infraction": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "id_juridiction": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "date_debut_peine": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-01-10"
+                    },
+                    "duree_peine_mois": {
+                        "type": "integer",
+                        "example": 36
+                    }
+                },
+                "type": "object"
+            },
+            "MessageResponse": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Opération réussie."
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Santé",
+            "description": "Vérification du serveur"
+        },
+        {
+            "name": "Détenus",
+            "description": "Enregistrement, recherche et fiches de synthèse"
+        },
+        {
+            "name": "Listes",
+            "description": "Listes des présents, sorties prévues et décès"
+        },
+        {
+            "name": "Condamnations",
+            "description": "Condamnations judiciaires"
+        },
+        {
+            "name": "Statistiques",
+            "description": "Répartitions par infraction et par âge"
+        },
+        {
+            "name": "Référentiels",
+            "description": "Infractions et juridictions"
+        }
+    ]
+}
