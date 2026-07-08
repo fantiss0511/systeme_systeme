@@ -6,6 +6,7 @@ use App\Http\Requests\StoreDetenuRequest;
 use App\Http\Requests\UpdateDetenuRequest;
 use App\Http\Resources\DetenuResource;
 use App\Models\Detenu;
+use App\Models\Infraction; 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -46,7 +47,7 @@ class DetenuController extends Controller
         $detenus = $query->orderBy('nom')->orderBy('prenom')->paginate(15);
 
         return DetenuResource::collection($detenus);
-    } // <-- CORRECTION : L'accolade manquante était ici
+    }
 
     #[OA\Post(
         path: '/detenus',
@@ -76,7 +77,7 @@ class DetenuController extends Controller
         description: 'Affiche les informations personnelles, condamnations, temps écoulé et temps restant.',
         tags: ['Détenus'],
         parameters: [
-            new OA\Parameter(name: 'detenu', in: 'path', required: true, description: 'ID ou NINA selon votre Route Model Binding', schema: new OA\Schema(type: 'string'), example: 'NINA-2026001'),
+            new OA\Parameter(name: 'detenu', in: 'path', required: true, description: 'ID ou NINA ', schema: new OA\Schema(type: 'string'), example: 'NINA-2026001'),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Fiche détenu'),
@@ -103,14 +104,12 @@ class DetenuController extends Controller
         responses: [
             new OA\Response(response: 200, description: 'Détenu mis à jour'),
             new OA\Response(response: 404, description: 'Détenu introuvable'),
-            new OA\Response(response: 422, description: 'Erreur de validation'),
         ]
     )]
     public function update(UpdateDetenuRequest $request, Detenu $detenu): DetenuResource
     {
         $detenu->update($request->validated());
         
-        // On recharge les relations pour la ressource retournée
         $detenu->load(['condamnations.infraction', 'condamnations.juridiction']);
 
         return new DetenuResource($detenu);
@@ -145,7 +144,7 @@ class DetenuController extends Controller
     )]
     public function presents(): AnonymousResourceCollection
     {
-        $detenus = Detenu::where('statut', 'present') // Ou utilisez votre scope : Detenu::present()
+        $detenus = Detenu::where('statut', 'present')
             ->with(['condamnations.infraction', 'condamnations.juridiction'])
             ->orderBy('nom')
             ->paginate(15);
@@ -188,11 +187,30 @@ class DetenuController extends Controller
     )]
     public function deces(): AnonymousResourceCollection
     {
-        $detenus = Detenu::where('statut', 'decede') // Ou Detenu::decede() si le scope existe
+        $detenus = Detenu::where('statut', 'decede')
             ->with(['condamnations.infraction', 'condamnations.juridiction'])
             ->orderBy('nom')
             ->paginate(15);
 
         return DetenuResource::collection($detenus);
+    }
+
+    // Récupère la clé de route pour le modèle.
+     
+    public function getRouteKeyName()
+    {
+        return 'nina'; 
+    }
+
+    
+     //Formulaire de création d'un détenu.
+     // Récupère les infractions triées pour la liste déroulante.
+     
+    public function create()
+    {
+        $infractions = Infraction::orderBy('nature')->get();
+        
+        
+        return view('admin.detenu.create', compact('infractions'));
     }
 }

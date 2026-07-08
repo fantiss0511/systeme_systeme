@@ -332,9 +332,6 @@
                     },
                     "404": {
                         "description": "Détenu introuvable"
-                    },
-                    "422": {
-                        "description": "Erreur de validation"
                     }
                 }
             },

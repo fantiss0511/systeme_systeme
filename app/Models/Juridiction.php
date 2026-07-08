@@ -11,18 +11,16 @@ class Juridiction extends Model
     use HasFactory;
 
     protected $table = 'juridictions';
-
     protected $primaryKey = 'id_juridiction';
 
     protected $fillable = [
         'nom',
         'ville',
+        'quartier', 
     ];
 
-    
     public function condamnations(): HasMany
     {
         return $this->hasMany(Condamnation::class, 'id_juridiction', 'id_juridiction');
     }
 }
-

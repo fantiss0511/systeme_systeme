@@ -1,25 +1,62 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
-///use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\InfractionController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
+// Page d'accueil
 Route::get('/', function () {
-    return view('welcome');
+    if (Auth::check()) {
+        return redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Routes d'authentification
+require __DIR__.'/auth.php';
 
+// Profil utilisateur
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+// Tableau de bord et pages admin
+Route::middleware('auth')->group(function () {
 
+    Route::get('/dashboard', function() {
+        return redirect()->route('admin.dashboard');
+    })->name('dashboard');
 
-//route pour l'admin 
- Route::get('/dash', [DashboardController::class, 'dashboard'])->name('admin.dash');
+    Route::get('/dashboard/admin', [DashboardController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/dashboard/admin/detenue/search', [DashboardController::class, 'search'])->name('admin.search');
+    Route::get('/dashboard/admin/sortie/listes', [DashboardController::class, 'sortieListes'])->name('admin.sortie.listes');
+    Route::get('/dashboard/admin/deces/listes', [DashboardController::class, 'decesListes'])->name('admin.deces.listes');
+
+    // Formulaire d'affichage du formulaire (GET)
+    Route::get('/dashboard/admin/detenue/create', [DashboardController::class, 'create'])->name('admin.detenus.create');
+    Route::post('/dashboard/admin/detenue/store', [DashboardController::class, 'store'])->name('admin.detenus.store');
+    Route::get('/dashboard/admin/detenue/show/{detenu}', [DashboardController::class, 'show'])->name('admin.detenus.show');
+    Route::get('/dashboard/admin/detenue/edit/{detenu}', [DashboardController::class, 'edit'])->name('admin.detenus.edit');
+    Route::put('/dashboard/admin/detenue/update/{detenu}', [DashboardController::class, 'update'])->name('admin.detenus.update');
+    Route::delete('/dashboard/admin/detenue/destroy/{detenu}', [DashboardController::class, 'destroy'])->name('admin.detenus.destroy');
+
+    Route::prefix('admin')->group(function () {
+        // Routes pour Infractions
+        Route::get('/infractions', [InfractionController::class, 'index'])->name('admin.infraction.index');
+        Route::get('/infractions/create', [InfractionController::class, 'create'])->name('admin.infraction.create');
+        Route::post('/infractions', [InfractionController::class, 'store'])->name('admin.infraction.store');
+        Route::delete('/infractions/{id_infraction}', [InfractionController::class, 'destroy'])->name('admin.infraction.destroy');
+
+        // Routes pour Juridictions
+        Route::get('/juridictions', [DashboardController::class, 'indexJuridiction'])->name('admin.juridiction.index');
+        Route::get('/juridictions/create', [DashboardController::class, 'createJuridiction'])->name('admin.juridiction.create');
+        Route::post('/juridictions', [DashboardController::class, 'storeJuridiction'])->name('admin.juridiction.store');
+        Route::delete('/juridictions/{id_juridiction}', [DashboardController::class, 'destroyJuridiction'])->name('admin.juridiction.destroy');
+    });
+
+    Route::get('/admin/infractions/types', [DashboardController::class, 'typesInfraction'])->name('admin.infraction.types');
+});

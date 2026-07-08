@@ -24,6 +24,25 @@ class RegisteredUserController extends Controller
     }
 
     /**
+     * Display the registration preview view.
+     */
+    public function preview(Request $request): View
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        return view('auth.register-preview', [
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'password_confirmation' => $request->password_confirmation,
+        ]);
+    }
+
+    /**
      * Handle an incoming registration request.
      *
      * @throws ValidationException

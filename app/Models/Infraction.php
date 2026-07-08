@@ -15,11 +15,10 @@ class Infraction extends Model
     protected $primaryKey = 'id_infraction';
 
     protected $fillable = [
-        'nature',         
-        'type_infraction', 
+        'type_infraction',
+        'nature', 
     ];
 
-    
     public function condamnations(): HasMany
     {
         return $this->hasMany(Condamnation::class, 'id_infraction', 'id_infraction');
