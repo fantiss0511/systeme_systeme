@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\ArchiveController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InfractionController;
+use App\Http\Controllers\MedicaleController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -11,6 +14,7 @@ Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('admin.dashboard');
     }
+
     return redirect()->route('login');
 });
 
@@ -27,7 +31,7 @@ Route::middleware('auth')->group(function () {
 // Tableau de bord et pages admin
 Route::middleware('auth')->group(function () {
 
-    Route::get('/dashboard', function() {
+    Route::get('/dashboard', function () {
         return redirect()->route('admin.dashboard');
     })->name('dashboard');
 
@@ -59,4 +63,10 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/admin/infractions/types', [DashboardController::class, 'typesInfraction'])->name('admin.infraction.types');
+
+    Route::get('/admin/archive', [ArchiveController::class, 'archive'])->name('admin.archive');
+    Route::get('/admin/archive/create', [ArchiveController::class, 'create'])->name('admin.archive.create');
+    Route::get('/admin/audit', [AuditController::class, 'audit'])->name('admin.audit');
+    Route::get('/admin/medicale', [MedicaleController::class, 'medicale'])->name('admin.medicale');
+    Route::get('/admin/medicale/create', [MedicaleController::class, 'create'])->name('admin.medicale.create');
 });
